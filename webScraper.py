@@ -5,7 +5,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.chrome.options import Options
-from tkinter import *
+import tkinter as tk
 import platform
 import sys
 import requests
@@ -14,13 +14,61 @@ import time
 import xlwt
 import os
 
+def clear():
+    btnRun['highlightbackground'] = 'blue'
+    root.after(200, reset_color)
+    root.destroy()
 
 def PlayedThisWeek(tt):
     t = int(calendar.timegm(time.gmtime())-int(tt))
     t = t/(60*60*24)
     return t < 7.2
 
+def reset_color():
+    setPlayers['highlightbackground'] = 'white'
+    btnRun['highlightbackground'] = 'white'
+
+def saveChanges():
+    setPlayers['highlightbackground'] = 'blue'
+    root.after(200, reset_color)
+
+
+    input = PlayerFile.get("1.0",'end-1c')
+    f= open("players.txt","w+")
+    f.write(input)
+    f.close()
+
+#setting up GUI
+
+
+root = tk.Tk()
+btn_text = tk.StringVar()
+btn_text.set("Run")
+headless = tk.IntVar()
+#player List
+PlayerFile = tk.Text(root, width=45, height= 20)
+
+with open("players.txt", 'r') as f:
+    PlayerFile.insert(tk.END, f.read())
+
+PlayerFile.pack(fill="none", expand=True)
+#buttons
+setPlayers = tk.Button(root, text="Save Changes", command=saveChanges)
+btnRun = tk.Button(root, textvariable=btn_text, command=clear)
+headOrLess = tk.Checkbutton(root, text="Run Headless?", variable=headless)
+
+
+setPlayers.config(bg = 'lightgrey')
+#EditPlayers.pack()
+setPlayers.pack()
+headOrLess.pack()
+btnRun.pack()
+
+root.geometry("550x400+200+150")
+root.mainloop()
+
 #get player names
+
 if (getattr(sys,'frozen', False)):
     path = sys._MEIPASS + "/players/players.txt"
     file = open(path,"r")
@@ -30,6 +78,9 @@ else:
     file = open("players.txt","r")
     names = file.readlines()
     file.close()
+
+global readyToRun
+readyToRun = "no"
 #setting up globals
 totalRuns = len(names)
 runs = 1
@@ -90,15 +141,10 @@ for i in range(0, 17):
 global row
 row = 0
 
-#setting up GUI
-print("setting up GUI")
-mainWindow = Tk()
-mainWindow.geometry("300x150+200+150")
-
-print("finished setting up GUI")
 
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+if(headless.get() == 1):
+    chrome_options.add_argument("--headless")
 #chrome_options.add_extension('')
 
 while(len(names) > 0): #getting all our players and running for each one
@@ -107,7 +153,7 @@ while(len(names) > 0): #getting all our players and running for each one
     gameList =[]
     mark = 0;
     currentPlayer = names.pop(0).strip()
-    print("There are " + str(len(names)) + "/" + str(totalRuns) + " players left. On - " + currentPlayer)
+    print("There are " + str(len(names)+1) + "/" + str(totalRuns) + " players left. On - " + currentPlayer)
     browser = webdriver.Chrome(options=chrome_options)
     browser.get('https://na.op.gg/summoner/userName='+ currentPlayer)
 
@@ -131,7 +177,7 @@ while(len(names) > 0): #getting all our players and running for each one
         loadMore.click()
         #print("loading...")
         browser.implicitly_wait(6)
-        time.sleep(5)#gross so try and find better solution
+        time.sleep(5)
         runs = runs +1
 
 
