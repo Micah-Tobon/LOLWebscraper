@@ -51,13 +51,15 @@ PlayerFile = tk.Text(root, width=45, height= 20)
 with open("players.txt", 'r') as f:
     PlayerFile.insert(tk.END, f.read())
 
-PlayerFile.pack(fill="none", expand=True)
+
+label = tk.Label(root, text = "The Players")
 #buttons
 setPlayers = tk.Button(root, text="Save Changes", command=saveChanges)
 btnRun = tk.Button(root, textvariable=btn_text, command=clear)
 headOrLess = tk.Checkbutton(root, text="Run Headless?", variable=headless)
 
-
+label.pack()
+PlayerFile.pack(fill="none", expand=True)
 setPlayers.config(bg = 'lightgrey')
 #EditPlayers.pack()
 setPlayers.pack()
