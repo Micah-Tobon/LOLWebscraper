@@ -1,0 +1,4 @@
+python -m venv winenv
+source winenv/Scripts/activate
+pip install -r winrequirements.txt
+python Webscraper.py
