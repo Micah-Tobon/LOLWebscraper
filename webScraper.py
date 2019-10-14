@@ -42,6 +42,7 @@ def saveChanges():
 
 
 root = tk.Tk()
+root.configure(background='lightgrey')
 btn_text = tk.StringVar()
 btn_text.set("Run")
 headless = tk.IntVar()
@@ -53,11 +54,12 @@ with open("players.txt", 'r') as f:
 
 
 label = tk.Label(root, text = "The Players")
+label.configure(background='lightgrey')
 #buttons
 setPlayers = tk.Button(root, text="Save Changes", command=saveChanges)
 btnRun = tk.Button(root, textvariable=btn_text, command=clear)
 headOrLess = tk.Checkbutton(root, text="Run Headless?", variable=headless)
-
+headOrLess.config(state ='active')
 label.pack()
 PlayerFile.pack(fill="none", expand=True)
 setPlayers.config(bg = 'lightgrey')
@@ -81,8 +83,8 @@ else:
     names = file.readlines()
     file.close()
 
-global readyToRun
-readyToRun = "no"
+global updates
+updates = 0
 #setting up globals
 totalRuns = len(names)
 runs = 1
@@ -152,8 +154,7 @@ if(headless.get() == 1):
 while(len(names) > 0): #getting all our players and running for each one
 
     runs = runs + 1
-    gameList =[]
-    mark = 0;
+    updates = 0
     currentPlayer = names.pop(0).strip()
     print("There are " + str(len(names)+1) + "/" + str(totalRuns) + " players left. On - " + currentPlayer)
     browser = webdriver.Chrome(options=chrome_options)
@@ -257,6 +258,7 @@ while(len(names) > 0): #getting all our players and running for each one
             #storing game data only for the first two games of the week
             # remove this when The class is removed
             if(PlayedThisWeek(TS) and winOrLoss != "Remake"):#EPOC time
+                updates += 1#counting the number of valid games found
                 secondTS = firstTS
                 firstTS = TS
 
@@ -304,71 +306,129 @@ while(len(names) > 0): #getting all our players and running for each one
     #end for
 
     browser.close()
+    if(updates  >= 2):
 
-    if(str(firstwinOrLoss) != str(secondwinOrLoss)):
+        if(str(firstwinOrLoss) != str(secondwinOrLoss)):
+            score = ("1,1")
+            points = 5;
+        elif(str(firstwinOrLoss) == "Victory"):
+            score = ("2,0")
+            points = 10;
+        else:
+            score = ("0,2")
+            points = 0
+        print(currentPlayer + "\'s first two games were: " + score)
+        #print(firstTS)
+        print(firstwinOrLoss)
+        print(firstKDA)
+        print()
+        #print(secondTS)
+        print(secondwinOrLoss)
+        print(secondKDA)
+        print()
+
+        #standard points
+        if(firstKDratio > 4):
+            points += 1
+        if (secondKDratio > 4):
+            points += 1
+
+        if(int(firstKPA) > 55):
+            points += 1
+        if(int(secondKPA) > 55):
+            points += 1
+
+        if(firstMVP == "MVP" or firstMVP == "ACE"):
+            points += 1
+        if(secondMVP  == "MVP" or secondMVP == "ACE"):
+            points += 1
+
+        if(float(firstCS) > 6.5):
+            points += 1
+        if(float(secondCS) > 6.5):
+            points += 1
+        #Bonus points
+        if(firstMultiKill == "Penta Kill"):
+            points += 2
+        if(secondMultiKill == "Penta Kill"):
+            points += 2
+
+        if(int(firstKPA) == 100):
+            points += 2
+        if(int(secondKPA) == 100):
+            points += 2
+
+        if(float(firstCS) >= 11):
+            points += 2
+        if(float(secondCS) >= 11):
+            points += 2
+
+        if(int(firstKDA[0:firstKDA.find('/')]) >= 20):
+            points +=2
+        if(int(secondKDA[0:secondKDA.find('/')]) >= 20):
+            points +=2
+
+        if(int(firstKDA[firstKDA.rfind('/')+1:]) >= 40):
+            points +=2
+        if(int(secondKDA[secondKDA.rfind('/')+1:]) >= 40):
+            points +=2
+    #end if
+    elif(updates == 1):
         score = ("1,1")
-        points = 5;
-    elif(str(firstwinOrLoss) == "Victory"):
-        score = ("2,0")
-        points = 10;
+        points = 5
+        print(currentPlayer + " Only played one game this week, second game forfit. " + score)
+        print()
+        print()
+        if(firstKDratio > 4):
+            points += 1
+
+        if(int(firstKPA) > 55):
+            points += 1
+
+        if(firstMVP == "MVP" or firstMVP == "ACE"):
+            points += 1
+
+        if(float(firstCS) > 6.5):
+            points += 1
+        #Bonus points
+        if(firstMultiKill == "Penta Kill"):
+            points += 2
+
+        if(int(firstKPA) == 100):
+            points += 2
+
+        if(float(firstCS) >= 11):
+            points += 2
+
+        if(int(firstKDA[0:firstKDA.find('/')]) >= 20):
+            points +=2
+
+        if(int(firstKDA[firstKDA.rfind('/')+1:]) >= 40):
+            points +=2
+
+        secondKDA = "-/-/-"
+        secondChamp = "--"
+        secondMVP = "--"
+        secondMultiKill = "--"
+        secondKPA = "--"
+        secondCS = "--"
+        secondCW = "--"
+        secondGameTime = "--"
     else:
         score = ("0,2")
         points = 0
-    print(currentPlayer + "\'s first two games were: " + score)
-    #print(firstTS)
-    print(firstwinOrLoss)
-    print(firstKDA)
-    print()
-    #print(secondTS)
-    print(secondwinOrLoss)
-    print(secondKDA)
-    print()
+        print(currentPlayer + " did not play any games this week- Default Score: " + score)
+        print()
+        print()
+        firstKDA = secondKDA = "-/-/-"
+        firstChamp = secondChamp = "--"
+        firstMVP = secondMVP = "--"
+        firstMultiKill = secondMultiKill = "--"
+        firstKPA = secondKPA = "--"
+        firstCS = secondCS = "--"
+        firstCW = secondCW = "--"
+        firstGameTime = secondGameTime = "--"
 
-    #standard points
-    if(firstKDratio > 4):
-        points += 1
-    if (secondKDratio > 4):
-        points += 1
-
-    if(int(firstKPA) > 55):
-        points += 1
-    if(int(secondKPA) > 55):
-        points += 1
-
-    if(firstMVP == "MVP" or firstMVP == "ACE"):
-        points += 1
-    if(secondMVP  == "MVP" or secondMVP == "ACE"):
-        points += 1
-
-    if(float(firstCS) > 6.5):
-        points += 1
-    if(float(secondCS) > 6.5):
-        points += 1
-    #Bonus points
-    if(firstMultiKill == "Penta Kill"):
-        points += 2
-    if(secondMultiKill == "Penta Kill"):
-        points += 2
-
-    if(int(firstKPA) == 100):
-        points += 2
-    if(int(secondKPA) == 100):
-        points += 2
-
-    if(float(firstCS) >= 11):
-        points += 2
-    if(float(secondCS) >= 11):
-        points += 2
-
-    if(int(firstKDA[0:firstKDA.find('/')]) >= 20):
-        points +=2
-    if(int(secondKDA[0:secondKDA.find('/')]) >= 20):
-        points +=2
-
-    if(int(firstKDA[firstKDA.rfind('/')+1:]) >= 40):
-        points +=2
-    if(int(secondKDA[secondKDA.rfind('/')+1:]) >= 40):
-        points +=2
 
     style = xlwt.easyxf('align: horiz center; borders: left thin, right thin, top thin, bottom thin;')
     sheet.write(row,0, currentPlayer, style)
