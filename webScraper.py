@@ -14,6 +14,8 @@ import time
 import xlwt
 import os
 
+
+
 def clear():
     btnRun['highlightbackground'] = 'blue'
     root.after(200, reset_color)
@@ -38,22 +40,38 @@ def saveChanges():
     f.write(input)
     f.close()
 
+def on_closing():
+        print("closing...")
+        root.destroy()
+        sys.exit(0)
+
+
+
 #setting up GUI
 
 
+
 root = tk.Tk()
+root.protocol("WM_DELETE_WINDOW", on_closing)
 root.configure(background='lightgrey')
 btn_text = tk.StringVar()
+weekNum = tk.StringVar()
+
 btn_text.set("Run")
 headless = tk.IntVar()
-#player List
+#player List and week number
 PlayerFile = tk.Text(root, width=45, height= 20)
-
+weekNumber = tk.Text(root, width=10, height= 1)
 with open("players.txt", 'r') as f:
     PlayerFile.insert(tk.END, f.read())
 
-
+#labels
 label = tk.Label(root, text = "The Players")
+label2 = tk.Label(root, text = "Enter the week number: ")
+placeHolder = tk.Label(root, text = "   ")
+
+placeHolder.configure(background='lightgrey')
+label2.configure(background='lightgrey')
 label.configure(background='lightgrey')
 #buttons
 setPlayers = tk.Button(root, text="Save Changes", command=saveChanges)
@@ -66,11 +84,18 @@ setPlayers.config(bg = 'lightgrey')
 #EditPlayers.pack()
 setPlayers.pack()
 headOrLess.pack()
-btnRun.pack()
+label2.pack(side=tk.LEFT)
+weekNumber.pack(side=tk.LEFT)
+placeHolder.pack(side = tk.LEFT)
+btnRun.pack(side=tk.LEFT)
+
+weekNum = weekNumber.get("1.0",'end-1c')
 
 root.geometry("550x400+200+150")
 root.mainloop()
 
+
+print("week number is " + weekNum)
 #get player names
 
 if (getattr(sys,'frozen', False)):
@@ -85,6 +110,8 @@ else:
 
 global updates
 updates = 0
+
+
 #setting up globals
 totalRuns = len(names)
 runs = 1
