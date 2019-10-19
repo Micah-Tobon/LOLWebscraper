@@ -193,6 +193,13 @@ while(len(names) > 0): #getting all our players and running for each one
 
 
     #updating the page
+    if(headless.get() == 1):
+        time.sleep(.5)
+    #banner = browser.find_element_by_xpath("//*[text()='Now playing!']")
+    #print("banner is" + banner)
+    #if(banner.isDisplayed()):
+    #    print("waiting for banner")
+    #    time.sleep(1)
     lastUpdated = browser.find_element_by_xpath("//*[@class = 'LastUpdate']")
 
     if(lastUpdated.text.find("minute") >= 0 or lastUpdated.text.find("second") >= 0):
@@ -478,11 +485,11 @@ while(len(names) > 0): #getting all our players and running for each one
     sheet.write(row,6, "KPA: " + firstKPA + "%", style)
     sheet.write(row,13, "KPA: " + secondKPA + "%", style)
 #CS
-    sheet.write(row,7, "CS per Min: "  + firstCS, style)
-    sheet.write(row,14, "CS per Min: "  + secondCS, style)
+    sheet.write(row,7, "CS per Min: "  + str(firstCS), style)
+    sheet.write(row,14, "CS per Min: "  + str(secondCS), style)
 #control wards
-    sheet.write(row,8, "Control wards "  + firstCW, style)
-    sheet.write(row,15, "Control wards " + secondCW, style)
+    sheet.write(row,8, "Control wards "  + str(firstCW), style)
+    sheet.write(row,15, "Control wards " + str(secondCW), style)
 #gameTime
     sheet.write(row,9, "Game Time:" + str(firstGameTime), style)
     sheet.write(row,16, "Game Time:" +  str(secondGameTime), style)
