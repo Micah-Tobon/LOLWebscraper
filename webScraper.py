@@ -49,6 +49,8 @@ def on_closing2():
         print("closing...")
         root2.destroy()
 
+
+
 #setting up GUI
 
 
@@ -60,7 +62,7 @@ btn_text = tk.StringVar()
 weekNum = tk.StringVar()
 
 btn_text.set("Run")
-headless = tk.IntVar()
+headless = tk.IntVar(value=1)
 #player List and week number
 PlayerFile = tk.Text(root, width=45, height= 20)
 weekNumber = tk.Text(root, width=10, height= 1)
