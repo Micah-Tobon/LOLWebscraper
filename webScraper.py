@@ -45,7 +45,9 @@ def on_closing():
         root.destroy()
         sys.exit(0)
 
-
+def on_closing2():
+        print("closing...")
+        root2.destroy()
 
 #setting up GUI
 
@@ -496,3 +498,21 @@ else:
     os.system("open webScraperResults.xls")
 browser.quit()
 print("Program complete")
+
+
+root2 = tk.Tk()
+root2.protocol("WM_DELETE_WINDOW", on_closing2)
+root2.configure(background='lightgrey')
+
+
+#player List and week number
+
+
+label = tk.Label(root2, text = "The program has finsihed running.")
+
+label.configure(background='lightgrey')
+
+label.pack()
+
+root2.geometry("550x400+200+150")
+root2.mainloop()
