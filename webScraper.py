@@ -205,11 +205,11 @@ while(len(names) > 0): #getting all our players and running for each one
     if(lastUpdated.text.find("minute") >= 0 or lastUpdated.text.find("second") >= 0):
         time.sleep(.01)
     else:
-        print("here we are...waiting")
+        print("waiting for page to update")
         browser.find_element_by_xpath("//*[@class='Buttons']//*[@class='Button SemiRound Blue']").click()
         #WebDriverWait(browser, 30000).until(expected_conditions.element_to_be_clickable((By.XPATH, "//*[@class='Buttons']//*[@class='Button SemiRound Blue']")))
         time.sleep(6)
-        print("Done waiting!")
+        print("Page done!")
     #loading all the matchers
     runs = 0 # cap at 3 "loadmore"s
     while(len(browser.find_elements_by_xpath("//*[@class='GameMoreButton Box']")) > 0 and runs < 3):
@@ -517,11 +517,13 @@ root2.configure(background='lightgrey')
 #player List and week number
 
 
-label = tk.Label(root2, text = "The program has finsihed running.")
-
+label = tk.Label(root2, text = "The program has successfully finished running.")
+label2 = tk.Label(root2, text = "You may now close this window.")
 label.configure(background='lightgrey')
+label2.configure(background='lightgrey')
 
 label.pack()
+label2.pack()
 
 root2.geometry("550x400+200+150")
 root2.mainloop()
