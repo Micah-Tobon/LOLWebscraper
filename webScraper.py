@@ -41,13 +41,17 @@ def saveChanges():
     f.close()
 
 def on_closing():
-        print("closing...")
-        root.destroy()
-        sys.exit(0)
+    log.write("closing...")
+    print("closing...")
+    log.close()
+    root.destroy()
+    sys.exit(0)
 
 def on_closing2():
-        print("closing...")
-        root2.destroy()
+    log.write("closing...")
+    print("closing...")
+    log.close()
+    root2.destroy()
 
 
 
@@ -98,8 +102,14 @@ weekNum = weekNumber.get("1.0",'end-1c')
 root.geometry("550x400+200+150")
 root.mainloop()
 
+logname = ("log" + str(calendar.timegm(time.gmtime())) + ".txt")
+print("writing to log file: " + logname)
+log = open(logname,"w+")
+
+
 
 print("week number is " + weekNum)
+log.write("week number is " + weekNum)
 #get player names
 
 if (getattr(sys,'frozen', False)):
@@ -180,6 +190,7 @@ row = 0
 chrome_options = Options()
 if(headless.get() == 1):
     chrome_options.add_argument("--headless")
+    log.write("running headless")
 #chrome_options.add_extension('')
 
 while(len(names) > 0): #getting all our players and running for each one
@@ -188,6 +199,7 @@ while(len(names) > 0): #getting all our players and running for each one
     updates = 0
     currentPlayer = names.pop(0).strip()
     print("There are " + str(len(names)+1) + "/" + str(totalRuns) + " players left. On - " + currentPlayer)
+    log.write("There are " + str(len(names)+1) + "/" + str(totalRuns) + " players left. On - " + currentPlayer)
     browser = webdriver.Chrome(options=chrome_options)
     browser.get('https://na.op.gg/summoner/userName='+ currentPlayer)
 
@@ -206,10 +218,12 @@ while(len(names) > 0): #getting all our players and running for each one
         time.sleep(.01)
     else:
         print("waiting for page to update")
+        log.write("waiting for page to update")
         browser.find_element_by_xpath("//*[@class='Buttons']//*[@class='Button SemiRound Blue']").click()
         #WebDriverWait(browser, 30000).until(expected_conditions.element_to_be_clickable((By.XPATH, "//*[@class='Buttons']//*[@class='Button SemiRound Blue']")))
         time.sleep(6)
-        print("Page done!")
+        print("Page done updating")
+        log.write("Page done updating")
     #loading all the matchers
     runs = 0 # cap at 3 "loadmore"s
     while(len(browser.find_elements_by_xpath("//*[@class='GameMoreButton Box']")) > 0 and runs < 3):
@@ -356,14 +370,21 @@ while(len(names) > 0): #getting all our players and running for each one
             score = ("0,2")
             points = 0
         print(currentPlayer + "\'s first two games were: " + score)
+        log.write(currentPlayer + "\'s first two games were: " + score)
         #print(firstTS)
         print(firstwinOrLoss)
+        log.write(firstwinOrLoss)
         print(firstKDA)
+        log.write(firstKDA)
         print()
+        log.write("")
         #print(secondTS)
         print(secondwinOrLoss)
+        log.write(secondwinOrLoss)
         print(secondKDA)
+        log.write(secondKDA)
         print()
+        log.write("")
 
         #standard points
         if(firstKDratio > 4):
@@ -415,6 +436,7 @@ while(len(names) > 0): #getting all our players and running for each one
         score = ("1,1")
         points = 5
         print(currentPlayer + " Only played one game this week, second game forfit. " + score)
+        log.write(currentPlayer + "\'s first two games were: " + score)
         print()
         print()
         if(firstKDratio > 4):
@@ -456,6 +478,7 @@ while(len(names) > 0): #getting all our players and running for each one
         score = ("0,2")
         points = 0
         print(currentPlayer + " did not play any games this week- Default Score: " + score)
+        log.write(currentPlayer + " did not play any games this week- Default Score: " + score)
         print()
         print()
         firstKDA = secondKDA = "-/-/-"
@@ -507,6 +530,7 @@ else:
     os.system("open webScraperResults.xls")
 browser.quit()
 print("Program complete")
+log.write("Progmra complete")
 
 
 root2 = tk.Tk()
