@@ -24,7 +24,7 @@ def clear():
 def PlayedThisWeek(tt):
     t = int(calendar.timegm(time.gmtime())-int(tt))
     t = t/(60*60*24)
-    return t < 7.2
+    return t < 7
 
 def reset_color():
     setPlayers['highlightbackground'] = 'white'
@@ -41,9 +41,7 @@ def saveChanges():
     f.close()
 
 def on_closing():
-    log.write("closing...")
     print("closing...")
-    log.close()
     root.destroy()
     sys.exit(0)
 
@@ -56,7 +54,8 @@ def on_closing2():
 
 
 #setting up GUI
-
+print("length is: " + str(len(sys.argv)))
+print("value is: " + sys.argv[1])
 
 
 root = tk.Tk()
@@ -100,9 +99,13 @@ btnRun.pack(side=tk.LEFT)
 weekNum = weekNumber.get("1.0",'end-1c')
 
 root.geometry("550x400+200+150")
+if(len(sys.argv) > 1 and sys.argv[1] == "-a"):
+    root.destroy()
+
 root.mainloop()
 
-logname = ("log" + str(calendar.timegm(time.gmtime())) + ".txt")
+
+logname = ("logs/log" + str(calendar.timegm(time.gmtime())) + ".txt")
 print("writing to log file: " + logname)
 log = open(logname,"w+")
 
@@ -550,4 +553,6 @@ label.pack()
 label2.pack()
 
 root2.geometry("550x400+200+150")
+if(len(sys.argv) > 1 and sys.argv[1] == "-a"):
+    root.destroy()
 root2.mainloop()
