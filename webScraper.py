@@ -21,10 +21,10 @@ def clear():
     root.after(200, reset_color)
     root.destroy()
 
-def PlayedThisWeek(tt):
+def PlayedThisWeek(tt, ts):
     t = int(calendar.timegm(time.gmtime())-int(tt))
-    t = t/(60*60*24)
-    return t < 7
+    t = t/(60*60.0) + ts
+    return t < 168
 
 def reset_color():
     setPlayers['highlightbackground'] = 'white'
@@ -36,8 +36,12 @@ def saveChanges():
 
 
     input = PlayerFile.get("1.0",'end-1c')
-    f= open("players.txt","w+")
-    f.write(input)
+    if(len(sys.argv) > 1 and ("-specific" in sys.argv[1] or "-s" in sys.argv[1])):
+        f= open("sPlayers.txt","w+")
+        f.write(input)
+    else:
+        f= open("players.txt","w+")
+        f.write(input)
     f.close()
 
 def on_closing():
@@ -55,8 +59,8 @@ def on_closing2():
 
 #setting up GUI
 print("length is: " + str(len(sys.argv)))
-print("value is: " + sys.argv[1])
-
+if(len(sys.argv) > 1):
+    print("value is: " + sys.argv[1])
 
 root = tk.Tk()
 root.protocol("WM_DELETE_WINDOW", on_closing)
@@ -69,11 +73,19 @@ headless = tk.IntVar(value=1)
 #player List and week number
 PlayerFile = tk.Text(root, width=45, height= 20)
 weekNumber = tk.Text(root, width=10, height= 1)
-with open("players.txt", 'r') as f:
-    PlayerFile.insert(tk.END, f.read())
+
+if(len(sys.argv) > 1 and ("-specific" in sys.argv[1] or "-s" in sys.argv[1])):
+    with open("players.txt", 'r') as f:
+        PlayerFile.insert(tk.END, f.read())
+else:
+    with open("players.txt", 'r') as f:
+        PlayerFile.insert(tk.END, f.read())
 
 #labels
-label = tk.Label(root, text = "The Players")
+if(len(sys.argv) > 1 and ("-specific" in sys.argv[1] or "-s" in sys.argv[1])):
+    label = tk.Label(root, text = "The Players to be updated")
+else:
+    label = tk.Label(root, text = "The Players")
 label2 = tk.Label(root, text = "Enter the week number: ")
 placeHolder = tk.Label(root, text = "   ")
 
@@ -99,7 +111,7 @@ btnRun.pack(side=tk.LEFT)
 weekNum = weekNumber.get("1.0",'end-1c')
 
 root.geometry("550x400+200+150")
-if(len(sys.argv) > 1 and sys.argv[1] == "-a"):
+if(len(sys.argv) > 1 and ("-auto" in sys.argv[1] or "-a" in sys.argv[1])):
     root.destroy()
 
 root.mainloop()
@@ -114,14 +126,23 @@ log = open(logname,"w+")
 print("week number is " + weekNum)
 log.write("week number is " + weekNum)
 #get player names
+updating = False
+if(len(sys.argv) > 1 and ("-specific" in sys.argv[1] or "-s" in sys.argv[1])):
+    updating = True
 
 if (getattr(sys,'frozen', False)):
-    path = sys._MEIPASS + "/players/players.txt"
+    if(not updating):
+        path = sys._MEIPASS + "/players/players.txt"
+    else:
+        path = sys._MEIPASS + "/players/sPlayers.txt"
     file = open(path,"r")
     names = file.readlines()
     file.close()
 else:
-    file = open("players.txt","r")
+    if(not updating):
+        file = open("players.txt","r")
+    else:
+        file = open("sPlayers.txt","r")
     names = file.readlines()
     file.close()
 
@@ -312,7 +333,15 @@ while(len(names) > 0): #getting all our players and running for each one
 
             #storing game data only for the first two games of the week
             # remove this when The class is removed
-            if(PlayedThisWeek(TS) and winOrLoss != "Remake"):#EPOC time
+            timeSet = 0
+            if(len(sys.argv) > 1 and "-t" in sys.argv[1]):
+                value = sys.argv.index("-t") +1
+                timeSet = sys.argv[value]
+            elif(len(sys.argv) > 1 and "-time" in sys.argv[1]):
+                value = sys.argv.index("-time") +1
+                timeSet = sys.argv[value]
+
+            if(PlayedThisWeek(TS, timeSet) and winOrLoss != "Remake"):#EPOC time
                 updates += 1#counting the number of valid games found
                 secondTS = firstTS
                 firstTS = TS
