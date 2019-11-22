@@ -116,8 +116,8 @@ if(len(sys.argv) > 1 and ("-auto" in sys.argv[1] or "-a" in sys.argv[1])):
 
 root.mainloop()
 
-
-logname = ("logs/log" + str(calendar.timegm(time.gmtime())) + ".txt")
+t = time.strftime('%m--%d-%Y__%H:%M:%S', time.localtime(calendar.timegm(time.gmtime())))
+logname = ("logs/log" + t + ".txt")
 print("writing to log file: " + logname)
 log = open(logname,"w+")
 
@@ -335,10 +335,10 @@ while(len(names) > 0): #getting all our players and running for each one
             # remove this when The class is removed
             timeSet = 0
             if(len(sys.argv) > 1 and "-t" in sys.argv[1]):
-                value = sys.argv.index("-t") +1
+                value = sys.argv.index("-t") + 1
                 timeSet = sys.argv[value]
             elif(len(sys.argv) > 1 and "-time" in sys.argv[1]):
-                value = sys.argv.index("-time") +1
+                value = sys.argv.index("-time") + 1
                 timeSet = sys.argv[value]
 
             if(PlayedThisWeek(TS, timeSet) and winOrLoss != "Remake"):#EPOC time
